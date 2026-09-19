@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICT461 Course Registration</title>
+  <style>
+    :root {
+      --page-bg: #f3f7fb;
+      --panel-bg: #ffffff;
+      --surface: #eef4fb;
+      --primary: #1e5fa8;
+      --primary-dark: #153f73;
+      --text: #1f2937;
+      --muted: #4b5563;
+      --border: #d9e2f1;
+      --success: #1f8f5f;
+      --error: #b42318;
+      --focus: #9ec5ff;
+      --shadow: rgba(17, 24, 39, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--page-bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 10px 25px var(--shadow);
+    }
+
+    .hero {
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #eaf3ff 0%, #ffffff 100%);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      line-height: 1.2;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      max-width: 60ch;
+    }
+
+    .course-layout {
+      display: grid;
+      grid-template-columns: minmax(250px, 0.9fr) minmax(300px, 1.4fr);
+      gap: 24px;
+    }
+
+    .course-info,
+    .form-panel {
+      padding: 28px;
+    }
+
+    .course-info h2,
+    .form-panel h2 {
+      color: var(--primary-dark);
+      margin-bottom: 18px;
+      font-size: 1.5rem;
+    }
+
+    .summary-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 14px;
+    }
+
+    .summary-list li {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .summary-list strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--primary-dark);
+    }
+
+    fieldset {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin: 0 0 18px;
+    }
+
+    legend {
+      padding: 0 8px;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .field-group {
+      margin-bottom: 18px;
+    }
+
+    .field-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    input,
+    select,
+    button {
+      font: inherit;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #bfcfe0;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    button:focus-visible {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--focus);
+    }
+
+    input[aria-invalid="true"],
+    select[aria-invalid="true"] {
+      border-color: var(--error);
+      background: #fff5f5;
+    }
+
+    .error {
+      min-height: 1.2em;
+      margin: 8px 2px 0;
+      color: var(--error);
+      font-size: 0.9rem;
+    }
+
+    .submit-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .primary-button {
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .primary-button:hover {
+      background: var(--primary-dark);
+    }
+
+    .primary-button:active {
+      transform: translateY(1px);
+    }
+
+    .required-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .success-banner {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #eafaf3;
+      border: 1px solid #bfeacc;
+      color: var(--success);
+      font-weight: 700;
+      display: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 16px;
+      }
+
+      .course-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero,
+      .course-info,
+      .form-panel {
+        padding: 20px;
+      }
+
+      .submit-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .primary-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero panel">
+      <p class="eyebrow">Course registration</p>
+      <h1>ICT461 Web Systems</h1>
+      <p class="subtitle">Register for the ICT461 course and secure your place in the next class section. Please complete all required fields before submitting your form.</p>
+    </header>
+
+    <main class="course-layout">
+      <aside class="course-info panel" aria-labelledby="course-details-heading">
+        <h2 id="course-details-heading">Course details</h2>
+        <ul class="summary-list">
+          <li>
+            <strong>Course</strong>
+            ICT461 Web Systems
+          </li>
+          <li>
+            <strong>Delivery</strong>
+            Online / Hybrid learning
+          </li>
+          <li>
+            <strong>Schedule</strong>
+            Tuesday and Thursday, 10:00 AM - 11:30 AM
+          </li>
+          <li>
+            <strong>Instructor</strong>
+            Dr. A. Rahman
+          </li>
+        </ul>
+      </aside>
+
+      <section class="form-panel panel" aria-labelledby="registration-heading">
+        <h2 id="registration-heading">Register now</h2>
+
+        <form id="registrationForm" novalidate>
+          <div id="formStatus" class="sr-only" aria-live="polite"></div>
+
+          <fieldset>
+            <legend>Student information</legend>
+
+            <div class="field-group">
+              <label for="fullName">Full name *</label>
+              <input id="fullName" name="fullName" type="text" autocomplete="name" aria-invalid="false" required />
+              <p id="fullNameError" class="error" aria-live="polite"></p>
+            </div>
+
+            <div class="field-group">
+              <label for="studentId">Student ID *</label>
+              <input id="studentId" name="studentId" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" autocomplete="off" aria-invalid="false" required />
+              <p id="studentIdError" class="error" aria-live="polite"></p>
+            </div>
+
+            <div class="field-group">
+              <label for="email">Email address *</label>
+              <input id="email" name="email" type="email" autocomplete="email" aria-invalid="false" required />
+              <p id="emailError" class="error" aria-live="polite"></p>
+            </div>
+
+            <div class="field-group">
+              <label for="phone">Phone number *</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" aria-invalid="false" required />
+              <p id="phoneError" class="error" aria-live="polite"></p>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Course choice</legend>
+
+            <div class="field-group">
+              <label for="section">Preferred section *</label>
+              <select id="section" name="section" aria-invalid="false" required>
+                <option value="">Select a section</option>
+                <option value="Section A">Section A</option>
+                <option value="Section B">Section B</option>
+                <option value="Section C">Section C</option>
+              </select>
+              <p id="sectionError" class="error" aria-live="polite"></p>
+            </div>
+          </fieldset>
+
+          <div class="submit-row">
+            <button type="submit" class="primary-button">Submit registration</button>
+            <p class="required-note">Fields marked with * are required.</p>
+          </div>
+
+          <p id="successMessage" class="success-banner" role="status" aria-live="polite">Registration submitted successfully.</p>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const form = document.getElementById('registrationForm');
+    const formStatus = document.getElementById('formStatus');
+    const successMessage = document.getElementById('successMessage');
+
+    const validationRules = {
+      fullName: {
+        validate: (value) => value.trim().length >= 2,
+        message: 'Please enter your full name.'
+      },
+      studentId: {
+        validate: (value) => /^\d{6}$/.test(value.trim()),
+        message: 'Student ID must be exactly 6 digits.'
+      },
+      email: {
+        validate: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()),
+        message: 'Please enter a valid email address.'
+      },
+      phone: {
+        validate: (value) => value.trim().length >= 8 && /^[0-9+()\-\s]+$/.test(value.trim()),
+        message: 'Please enter a valid phone number.'
+      },
+      section: {
+        validate: (value) => value.trim() !== '',
+        message: 'Please choose a course section.'
+      }
+    };
+
+    function setFieldState(field, isValid, message) {
+      const errorMessage = document.getElementById(field.name + 'Error');
+      field.setAttribute('aria-invalid', String(!isValid));
+
+      if (isValid) {
+        errorMessage.textContent = '';
+      } else {
+        errorMessage.textContent = message;
+      }
+    }
+
+    Object.keys(validationRules).forEach((fieldName) => {
+      const field = form.elements[fieldName];
+      const validateField = () => {
+        const valid = validationRules[fieldName].validate(field.value);
+        setFieldState(field, valid, validationRules[fieldName].message);
+        return valid;
+      };
+
+      field.addEventListener('input', validateField);
+      field.addEventListener('blur', validateField);
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      let isValid = true;
+
+      Object.keys(validationRules).forEach((fieldName) => {
+        const field = form.elements[fieldName];
+        const valid = validationRules[fieldName].validate(field.value);
+        setFieldState(field, valid, validationRules[fieldName].message);
+
+        if (!valid) {
+          isValid = false;
+        }
+      });
+
+      if (isValid) {
+        successMessage.style.display = 'block';
+        formStatus.textContent = 'Form submitted successfully.';
+        form.reset();
+      } else {
+        successMessage.style.display = 'none';
+        formStatus.textContent = 'Please correct the highlighted fields.';
+
+        const firstInvalidField = form.querySelector('[aria-invalid="true"]');
+        if (firstInvalidField) {
+          firstInvalidField.focus();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
