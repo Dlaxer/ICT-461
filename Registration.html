@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="card" aria-labelledby="title">
+        <p class="eyebrow">Course Registration</p>
+        <h1 id="title">ICT461</h1>
+
+        <form id="registrationForm" novalidate>
+          <div class="field">
+            <label for="fullName">Full Name</label>
+            <input id="fullName" name="fullName" type="text" aria-describedby="fullNameError" />
+            <small id="fullNameError" class="error" aria-live="polite"></small>
+          </div>
+
+          <div class="field">
+            <label for="studentNumber">Student Number</label>
+            <input id="studentNumber" name="studentNumber" type="text" inputmode="numeric" maxlength="6" aria-describedby="studentNumberError" />
+            <small id="studentNumberError" class="error" aria-live="polite"></small>
+          </div>
+
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" aria-describedby="emailError" />
+            <small id="emailError" class="error" aria-live="polite"></small>
+          </div>
+
+          <button type="submit">Register</button>
+          <p id="successMessage" class="success" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
