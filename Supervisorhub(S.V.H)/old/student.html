@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>My Supervision Meetings</title>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body class="page">
+        <header class="top no-print">
+            <h1>My Supervision meetings</h1>
+            <button id ="logoutBtn" class="ghost" type="button">Logout</button>
+        </header>
+
+        <section class = "card-block profile">
+            <div><b id="pName"></b></div>
+            <div>ID: <span id ="pID"></span> . <span id="pProgram"></span> . Year <span id="pYear"></span></div>
+            <div>Supervisor: <b id="pSupervisor"></b></div>
+        </section>
+
+        <section class="card-block no-print">
+            <h2>Log a meeting</h2>
+            <p id="msg" class="msg" role="alert"></p>
+            <form id=" requestForm">
+                <label>Meeting date <input type="date" id="meetingDate" required></label>
+                <label>Project title <input id ="projectTitle" maxLength = "150" required></label>
+                <button type="submit" id="submitBtn">Submit for verificaton</button>
+            </form>
+        </section>
+        <section class="card-block">
+            <div class="row-between">
+                <h2>My Meeting Record</h2>
+                <button id="printBtn" class="ghost no-print" type="button" >Print my form</button>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr><th>#</th><th>Meeting Date </th><th>Project Title</th>
+                        <th>Status</th><th>Supervisor Signature</th></tr>
+                    </thead>
+                    <tbody id="rows"></tbody>
+                </table>
+            </div>
+            <p id="empty" class="sub">No meetings logged yet.</p>
+        </section>
+    </div>
+    <script type="module" src="js/student.js"></script>
+    </body>
+</html>

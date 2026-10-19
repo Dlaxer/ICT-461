@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Supervisor Dashboard · Supervision Register</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <header class="nav no-print">
+    <div class="nav-in">
+      <a class="brand" href="index.html" aria-label="Supervision Register home">
+        <img src="img/crest.png" alt="">
+        <span class="brand-copy">
+          <span class="brand-org">Mulungushi University · School of Engineering and Technology (SET)</span>
+          <span class="brand-name">Supervision Register</span>
+        </span>
+      </a>
+      <button id="logoutBtn" class="btn-ghost btn-sm" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main class="admin-wrap no-print">
+    <section class="hero">
+      <p class="eyebrow">Supervisor dashboard</p>
+      <h1>Good day, <span id="supervisorName">…</span></h1>
+      <p class="intro">Here’s your supervision activity at a glance.</p>
+    </section>
+
+    <section class="overview-panel" aria-labelledby="overviewTitle">
+      <div class="overview-heading">
+        <div>
+          <h2 id="overviewTitle">Request overview</h2>
+          <p>See what needs attention and what you have completed.</p>
+        </div>
+        <p id="message" class="dashboard-message" role="status" aria-live="polite">Checking access…</p>
+      </div>
+      <div class="stats admin-stats" aria-label="Request summary">
+        <article class="stat stat-pending">
+          <div class="n" id="pendingCount">0</div><div class="l">Pending</div>
+        </article>
+        <article class="stat stat-overdue">
+          <div class="n" id="overdueCount">0</div><div class="l">Overdue</div>
+        </article>
+        <article class="stat stat-rejected">
+          <div class="n" id="rejectedCount">0</div><div class="l">Rejected</div>
+        </article>
+        <article class="stat stat-done">
+          <div class="n" id="doneCount">0</div><div class="l">Done this week</div>
+        </article>
+      </div>
+    </section>
+
+    <p id="overdueBanner" class="overdue-banner" role="alert" hidden></p>
+
+    <section class="panel requests-panel">
+      <div class="panel-head requests-heading">
+        <div>
+          <h2>Meeting requests</h2>
+          <p class="panel-subtitle">Only requests assigned to your supervisor account are shown.</p>
+        </div>
+        <span id="resultCount" class="result-count">0 requests</span>
+      </div>
+
+      <div class="filters" aria-label="Filter meeting requests">
+        <label class="search-field">Search by student name or ID
+          <input id="searchInput" type="search" placeholder="e.g. Jane or 2024001" autocomplete="off">
+        </label>
+        <label>Status
+          <select id="statusFilter">
+            <option value="all">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </label>
+        <label>Meeting date from
+          <input id="dateFrom" type="date">
+        </label>
+        <label>Meeting date to
+          <input id="dateTo" type="date">
+        </label>
+        <button id="clearFilters" class="btn-ghost clear-filters" type="button">Clear filters</button>
+      </div>
+      <p id="filterError" class="filter-error" role="alert"></p>
+
+      <div class="table-scroll">
+        <table class="request-table">
+          <thead>
+            <tr>
+              <th scope="col">Meeting date</th>
+              <th scope="col">Student</th>
+              <th scope="col">Project</th>
+              <th scope="col">Status</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="requestRows"></tbody>
+        </table>
+      </div>
+      <p id="emptyRequests" class="empty" hidden>No requests match these filters.</p>
+    </section>
+
+    <section class="panel print-controls">
+      <div class="panel-head">
+        <div>
+          <h2>Print supervision register</h2>
+          <p class="panel-subtitle">Choose a day or week. The print layout is designed for clear reading and signing.</p>
+        </div>
+      </div>
+      <div class="register-controls">
+        <label>Register period
+          <select id="registerMode">
+            <option value="week">Week</option>
+            <option value="date">Single date</option>
+          </select>
+        </label>
+        <label id="registerDateLabel">Date in week
+          <input id="registerDate" type="date" required>
+        </label>
+        <button id="printRegister" class="btn" type="button">Prepare and print</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="reviewDialog" class="review-dialog" aria-labelledby="reviewTitle">
+    <form id="reviewForm">
+      <h2 id="reviewTitle">Review request</h2>
+      <p id="reviewStudent" class="review-student"></p>
+      <label for="reviewComment">Comment <span class="optional">(optional)</span>
+        <textarea id="reviewComment" maxlength="500" rows="4" placeholder="Add a note for the student"></textarea>
+      </label>
+      <p id="reviewError" class="review-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button id="cancelReview" class="btn-ghost" type="button">Cancel</button>
+        <button id="rejectRequest" class="btn btn-reject" type="submit" value="rejected">Reject</button>
+        <button id="approveRequest" class="btn" type="submit" value="approved">Approve</button>
+      </div>
+    </form>
+  </dialog>
+
+  <section id="registerSheet" class="register-sheet" aria-label="Printable supervision register">
+    <header class="register-print-head">
+      <img src="img/crest.png" alt="" onerror="this.remove()">
+      <div>
+        <p class="register-print-university">Mulungushi University · School of Engineering and Technology</p>
+        <h1>Department of Computer Science and Information Technology</h1>
+        <h2>Supervisor – Student Meetings Register</h2>
+      </div>
+    </header>
+    <div class="register-print-meta">
+      <p><strong>Supervisor:</strong> <span id="printSupervisor"></span></p>
+      <p><strong>Period:</strong> <span id="printPeriod"></span></p>
+      <p><strong>Printed:</strong> <span id="printDate"></span></p>
+    </div>
+    <table class="register-print-table">
+      <thead>
+        <tr>
+          <th scope="col">Meeting date</th>
+          <th scope="col">Student</th>
+          <th scope="col">Programme / year</th>
+          <th scope="col">Project title</th>
+          <th scope="col">Status</th>
+          <th scope="col">Supervisor comment</th>
+        </tr>
+      </thead>
+      <tbody id="registerPrintRows"></tbody>
+    </table>
+    <div class="register-signature">
+      <div class="signature-field">
+        <div class="signature-line"></div>
+        <p>Supervisor signature</p>
+      </div>
+      <div class="signature-field signature-date">
+        <div class="signature-line"></div>
+        <p>Date</p>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

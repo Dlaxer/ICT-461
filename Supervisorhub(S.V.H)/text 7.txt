@@ -1,0 +1,13 @@
+What's remaining
+Code:
+Supervisor dashboard (admin.html, admin.js, admin.css):
+Four cards: Pending, Overdue (pending more than 2 days, with a red alert banner), Rejected, and Done this week.
+Search by name or ID, and filter by date or status.
+Approve or reject with an optional comment.
+Each supervisor sees only their own students.
+Supervisor register print: a register for a chosen date or week, A4 landscape, with repeating headers, rows that don't split, and one signature block.
+Firestore security rules:
+A supervisor can read only requests where supervisorId is their own UID.
+Students can't set status, comment or reviewedBy, and can only resubmit a rejected request.
+The supervisor field on a student's profile can't be changed after registering.
+The supervisors list is publicly readable, for the dropdown.

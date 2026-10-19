@@ -1,0 +1,317 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// users/{uid}
+//   fullName: string, 1-120 characters
+//   studentId: string, 1-40 characters
+//   program: string, 1-120 characters
+//   year: integer, 1-6
+//   supervisorId: string, immutable after registration
+//   supervisorName: string, immutable after registration
+//   email: string, must match the authenticated account
+//   createdAt: timestamp, immutable
+//
+// supervisors/{uid}
+//   role: string, exactly "supervisor"; readable only by the matching UID.
+// supervisors_public/{uid}
+//   name: string, 1-100 characters; contains no private fields.
+//   Public dropdown records are provisioned by a trusted administrator.
+// supervisor_applications/{uid}
+//   fullName: string, 1-120 characters
+//   email: string, must match the authenticated account
+//   submittedAt: timestamp, set at creation; applications are immutable.
+//
+// requests/{studentUid}_{meetingDate}
+//   uid, fullName, studentId, program, year, supervisorId, supervisorName,
+//   projectTitle, meetingDate, status, submittedAt, resubmitCount
+//   Optional review fields: reviewedBy, reviewedAt, comment.
+//   Students create pending requests and may resubmit only rejected requests.
+//   Supervisors may review only pending requests assigned to their UID.
+//
+// ===============================================================
+
+function isAuthenticated() {
+  return request.auth != null;
+}
+
+function isOwner(userId) {
+  return isAuthenticated() && request.auth.uid == userId;
+}
+
+function isDocOwner() {
+  return isAuthenticated() && request.auth.uid == resource.data.uid;
+}
+
+function hasRequiredFields(data, fields) {
+  return data.keys().hasAll(fields);
+}
+
+function hasOnlyAllowedFields(data, fields) {
+  return data.keys().hasOnly(fields);
+}
+
+function validString(value, minLength, maxLength) {
+  return value is string &&
+    value.size() >= minLength &&
+    value.size() <= maxLength;
+}
+
+function isValidSupervisorRole(data) {
+  return hasRequiredFields(data, ['role']) &&
+    hasOnlyAllowedFields(data, ['role']) &&
+    data.role == 'supervisor';
+}
+
+function uidUnchanged() {
+  return request.resource.data.uid == request.auth.uid;
+}
+
+function uidNotModified() {
+  return request.resource.data.uid == resource.data.uid;
+}
+
+function isValidUser(data) {
+  return hasRequiredFields(data, [
+      'fullName', 'studentId', 'program', 'year', 'supervisorId',
+      'supervisorName', 'email', 'createdAt'
+    ]) &&
+    hasOnlyAllowedFields(data, [
+      'fullName', 'studentId', 'program', 'year', 'supervisorId',
+      'supervisorName', 'email', 'createdAt'
+    ]) &&
+    validString(data.fullName, 1, 120) &&
+    validString(data.studentId, 1, 40) &&
+    validString(data.program, 1, 120) &&
+    data.year is int && data.year >= 1 && data.year <= 6 &&
+    validString(data.supervisorId, 1, 128) &&
+    validString(data.supervisorName, 1, 100) &&
+    data.email is string && data.email.size() > 0 &&
+    data.email.size() <= 254 &&
+    request.auth.token.email is string &&
+    data.email == request.auth.token.email &&
+    data.createdAt is timestamp;
+}
+
+function isValidRequest(data) {
+  return hasRequiredFields(data, [
+      'uid', 'fullName', 'studentId', 'program', 'year', 'supervisorId',
+      'supervisorName', 'projectTitle', 'meetingDate', 'status',
+      'submittedAt', 'resubmitCount'
+    ]) &&
+    hasOnlyAllowedFields(data, [
+      'uid', 'fullName', 'studentId', 'program', 'year', 'supervisorId',
+      'supervisorName', 'projectTitle', 'meetingDate', 'status',
+      'submittedAt', 'resubmitCount', 'reviewedBy', 'reviewedAt', 'comment'
+    ]) &&
+    data.uid is string && data.uid.size() > 0 && data.uid.size() <= 128 &&
+    validString(data.fullName, 1, 120) &&
+    validString(data.studentId, 1, 40) &&
+    validString(data.program, 1, 120) &&
+    data.year is int && data.year >= 1 && data.year <= 6 &&
+    validString(data.supervisorId, 1, 128) &&
+    validString(data.supervisorName, 1, 100) &&
+    validString(data.projectTitle, 1, 150) &&
+    data.meetingDate is string &&
+    data.meetingDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') &&
+    data.status in ['pending', 'approved', 'rejected'] &&
+    data.submittedAt is timestamp &&
+    data.resubmitCount is int &&
+    data.resubmitCount >= 0 && data.resubmitCount <= 1000 &&
+    (!('reviewedBy' in data) ||
+      data.reviewedBy == null ||
+      validString(data.reviewedBy, 1, 128)) &&
+    (!('reviewedAt' in data) ||
+      data.reviewedAt == null ||
+      data.reviewedAt is timestamp) &&
+    (!('comment' in data) ||
+      data.comment == null ||
+      (data.comment is string && data.comment.size() <= 500));
+}
+
+function isValidSupervisorRecord(data) {
+  return hasRequiredFields(data, ['name']) &&
+    hasOnlyAllowedFields(data, ['name']) &&
+    validString(data.name, 1, 100);
+}
+
+function isValidSupervisorApplication(data) {
+  return hasRequiredFields(data, ['fullName', 'email', 'submittedAt']) &&
+    hasOnlyAllowedFields(data, ['fullName', 'email', 'submittedAt']) &&
+    validString(data.fullName, 1, 120) &&
+    data.email is string && data.email.size() > 0 &&
+    data.email.size() <= 254 &&
+    request.auth.token.email is string &&
+    data.email == request.auth.token.email &&
+    data.submittedAt is timestamp;
+}
+
+function profileMatchesRequest(profile, data) {
+  return data.fullName == profile.fullName &&
+    data.studentId == profile.studentId &&
+    data.program == profile.program &&
+    data.year == profile.year &&
+    data.supervisorId == profile.supervisorId &&
+    data.supervisorName == profile.supervisorName;
+}
+
+function isValidStudentResubmission(requestId) {
+  let data = request.resource.data;
+  return isAuthenticated() &&
+    isDocOwner() &&
+    uidNotModified() &&
+    resource.data.status == 'rejected' &&
+    requestId == request.auth.uid + '_' + data.meetingDate &&
+    isValidRequest(data) &&
+    data.status == 'pending' &&
+    data.submittedAt == request.time &&
+    data.resubmitCount == resource.data.resubmitCount + 1 &&
+    data.meetingDate == resource.data.meetingDate &&
+    data.fullName == resource.data.fullName &&
+    data.studentId == resource.data.studentId &&
+    data.program == resource.data.program &&
+    data.year == resource.data.year &&
+    data.supervisorId == resource.data.supervisorId &&
+    data.supervisorName == resource.data.supervisorName &&
+    hasOnlyAllowedFields(data, [
+      'uid', 'fullName', 'studentId', 'program', 'year', 'supervisorId',
+      'supervisorName', 'projectTitle', 'meetingDate', 'status',
+      'submittedAt', 'resubmitCount'
+    ]) &&
+    request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+      'projectTitle', 'status', 'submittedAt', 'resubmitCount',
+      'reviewedBy', 'reviewedAt', 'comment'
+    ]);
+}
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSupervisor() {
+      let supervisorPath =
+        /databases/$(database)/documents/supervisors/$(request.auth.uid);
+      return isAuthenticated() &&
+        exists(supervisorPath) &&
+        isValidSupervisorRole(get(supervisorPath).data);
+    }
+
+    function isValidStudentRequestCreate(requestId) {
+      let data = request.resource.data;
+      let profilePath = /databases/$(database)/documents/users/$(request.auth.uid);
+      let supervisorPath =
+        /databases/$(database)/documents/supervisors_public/$(data.supervisorId);
+      return isAuthenticated() &&
+        isOwner(data.uid) &&
+        uidUnchanged() &&
+        requestId == request.auth.uid + '_' + data.meetingDate &&
+        isValidRequest(data) &&
+        data.status == 'pending' &&
+        data.submittedAt == request.time &&
+        data.resubmitCount == 0 &&
+        hasOnlyAllowedFields(data, [
+          'uid', 'fullName', 'studentId', 'program', 'year', 'supervisorId',
+          'supervisorName', 'projectTitle', 'meetingDate', 'status',
+          'submittedAt', 'resubmitCount'
+        ]) &&
+        exists(profilePath) &&
+        exists(supervisorPath) &&
+        profileMatchesRequest(get(profilePath).data, data) &&
+        isValidUser(get(profilePath).data) &&
+        isValidSupervisorRecord(get(supervisorPath).data) &&
+        get(supervisorPath).data.name == data.supervisorName;
+    }
+
+    function isValidSupervisorReview() {
+      let data = request.resource.data;
+      return isSupervisor() &&
+        resource.data.supervisorId == request.auth.uid &&
+        resource.data.status == 'pending' &&
+        data.status in ['approved', 'rejected'] &&
+        data.reviewedBy == request.auth.uid &&
+        data.reviewedAt == request.time &&
+        (data.comment == null ||
+          (data.comment is string && data.comment.size() <= 500)) &&
+        isValidRequest(data) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'comment', 'reviewedBy', 'reviewedAt'
+        ]);
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) &&
+        isValidUser(request.resource.data) &&
+        request.resource.data.createdAt == request.time &&
+        exists(/databases/$(database)/documents/supervisors_public/$(request.resource.data.supervisorId)) &&
+        isValidSupervisorRecord(
+          get(/databases/$(database)/documents/supervisors_public/$(request.resource.data.supervisorId)).data
+        ) &&
+        get(/databases/$(database)/documents/supervisors_public/$(request.resource.data.supervisorId)).data.name ==
+          request.resource.data.supervisorName;
+      allow update: if isOwner(userId) &&
+        isValidUser(request.resource.data) &&
+        request.resource.data.supervisorId == resource.data.supervisorId &&
+        request.resource.data.supervisorName == resource.data.supervisorName &&
+        request.resource.data.email == resource.data.email &&
+        request.resource.data.createdAt == resource.data.createdAt &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'fullName', 'studentId', 'program', 'year'
+        ]);
+      allow delete: if false;
+    }
+
+    match /supervisors/{supervisorId} {
+        // Login checks the signed-in user's role document even for students.
+        allow get: if isOwner(supervisorId) &&
+          (!exists(
+            /databases/$(database)/documents/supervisors/$(supervisorId)
+          ) || isValidSupervisorRole(resource.data));
+        allow create, update, delete: if false;
+      }
+
+    match /supervisors_public/{supervisorId} {
+      // This separate collection contains dropdown names only; never put PII here.
+      allow get: if isValidSupervisorRecord(resource.data);
+      allow list: if true;
+      allow create, update, delete: if false;
+    }
+
+    match /supervisor_applications/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) &&
+        isValidSupervisorApplication(request.resource.data) &&
+        request.resource.data.submittedAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /requests/{requestId} {
+      // Students transactionally check their own request ID before first create.
+      allow get: if isAuthenticated() &&
+        (requestId.matches(
+          '^' + request.auth.uid + '_[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+        ) ||
+         resource.data.uid == request.auth.uid ||
+         (isSupervisor() && resource.data.supervisorId == request.auth.uid));
+      allow list: if isAuthenticated() &&
+        ((resource.data.uid == request.auth.uid) ||
+         (isSupervisor() && resource.data.supervisorId == request.auth.uid));
+      allow create: if isValidStudentRequestCreate(requestId);
+      allow update: if (
+        isAuthenticated() &&
+        isDocOwner() &&
+        isValidRequest(request.resource.data) &&
+        isValidStudentResubmission(requestId)
+      ) || (
+        isValidRequest(request.resource.data) &&
+        isValidSupervisorReview()
+      );
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

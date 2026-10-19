@@ -1,0 +1,121 @@
+.wrap {
+  width:min(1240px,100%); margin:0 auto; padding:34px 24px 64px;
+  display:grid; gap:22px;
+}
+.eyebrow { margin:0 0 6px; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); font-weight:700; }
+.hero { padding:4px 2px 2px; }
+.hero h1 { font-size:clamp(1.8rem,4vw,2.6rem); }
+.intro { color:var(--muted); margin:9px 0 0; font-size:.94rem; max-width:68ch; }
+.chips { display:flex; flex-wrap:wrap; gap:9px; margin-top:18px; }
+.chip {
+  display:inline-flex; gap:5px; align-items:center; background:rgba(255,255,255,.82);
+  border:1px solid var(--line); padding:7px 12px; border-radius:99px; font-size:.79rem;
+}
+.stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.stat {
+  background:rgba(255,255,255,.92); border:1px solid var(--line);
+  border-left:4px solid var(--c); border-radius:var(--radius); padding:17px 19px;
+  box-shadow:0 5px 18px rgba(18,38,74,.035);
+}
+.stat .n { font-family:var(--serif); font-size:2rem; font-weight:700; line-height:1.1; }
+.stat .l { margin-top:4px; font-size:.8rem; color:var(--muted); font-weight:600; }
+.grid { display:grid; grid-template-columns:minmax(280px,.78fr) minmax(0,1.55fr); gap:18px; align-items:start; }
+.panel {
+  background:rgba(255,255,255,.96); border:1px solid var(--line);
+  border-radius:var(--radius); padding:24px;
+  box-shadow:0 8px 26px rgba(18,38,74,.045);
+}
+.panel h2 { font-size:1.25rem; margin-bottom:16px; }
+.panel-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; }
+.panel-head h2 { margin:0; }
+#requestForm .btn { min-height:46px; margin-top:3px; }
+.meet { display:grid; grid-template-columns:58px minmax(0,1fr) auto; gap:15px; padding:16px 0; border-top:1px solid var(--line); align-items:start; }
+.meet:first-child { border-top:0; }
+.date-badge { width:58px; text-align:center; border-radius:11px; background:#f4f1e9; padding:7px 0; line-height:1.15; }
+.date-badge .d { font-family:var(--serif); font-size:1.45rem; font-weight:700; }
+.date-badge .m { font-size:.68rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); }
+.meet-title { font-weight:700; overflow-wrap:anywhere; }
+.meet-note { font-size:.84rem; color:var(--muted); margin-top:5px; line-height:1.55; }
+.meet-side { display:grid; gap:8px; justify-items:end; }
+.pill { font-size:.72rem; font-weight:700; padding:5px 10px; border-radius:99px; white-space:nowrap; }
+.pill.approved { background:var(--green-bg); color:var(--green); }
+.pill.pending { background:var(--amber-bg); color:var(--amber); }
+.pill.rejected { background:var(--red-bg); color:var(--red); }
+.empty { text-align:center; color:var(--muted); padding:34px 12px 20px; font-size:.92rem; line-height:1.7; }
+
+@media (max-width:820px) {
+  .wrap { padding:26px 18px 48px; gap:18px; }
+  .grid { grid-template-columns:1fr; }
+}
+@media (max-width:560px) {
+  .wrap { padding:20px 14px 36px; gap:14px; }
+  .hero { padding:2px 1px 0; }
+  .hero h1 { font-size:1.9rem; }
+  .intro { margin-top:6px; font-size:.87rem; line-height:1.45; }
+  .chips { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; margin-top:13px; }
+  .chip { min-width:0; border-radius:10px; padding:7px 9px; font-size:.71rem; line-height:1.35; overflow-wrap:anywhere; }
+  .stats { gap:8px; }
+  .stat { padding:11px 10px; border-radius:12px; }
+  .stat .n { font-size:1.5rem; }
+  .stat .l { margin-top:3px; font-size:.68rem; }
+  .grid { gap:12px; }
+  .panel { padding:16px; border-radius:13px; box-shadow:0 4px 15px rgba(18,38,74,.035); }
+  .panel h2 { font-size:1.15rem; margin-bottom:12px; }
+  .panel-head { margin-bottom:8px; }
+  .panel-head h2 { margin:0; }
+  #requestForm { gap:12px; }
+  #requestForm input { min-height:46px; }
+  #requestForm .btn { width:100%; min-height:48px; margin-top:0; }
+  .meet { grid-template-columns:44px minmax(0,1fr); gap:10px; padding:13px 0; }
+  .date-badge { width:44px; border-radius:9px; }
+  .date-badge .d { font-size:1.3rem; }
+  .meet-title { font-size:.87rem; }
+  .meet-note { font-size:.78rem; line-height:1.45; }
+  .meet-side { grid-column:2; display:flex; justify-content:space-between; align-items:center; }
+  .panel-head { align-items:flex-start; flex-wrap:wrap; }
+  .panel-head .btn-ghost { min-height:36px; }
+  .empty { padding:22px 8px 12px; }
+
+  /* Put the meeting action and history ahead of secondary summary counts. */
+  .wrap { display:flex; flex-direction:column; }
+  .hero { order:0; }
+  .grid { order:1; }
+  .stats { order:2; }
+}
+
+/* ---------- Student record: uncluttered A4 form for reading and signing ---------- */
+.sheet { display:none; }
+@media print {
+  @page { size:A4 portrait; margin:13mm 15mm; }
+  html,body { background:#fff !important; color:#111; }
+  body { font-family:Arial,Helvetica,sans-serif; font-size:10.5pt; line-height:1.4; }
+  .no-print { display:none !important; }
+  .sheet { display:block; font-family:Arial,Helvetica,sans-serif; color:#111; }
+  .sheet-head {
+    display:flex; align-items:center; justify-content:center; gap:7mm;
+    text-align:left; margin:0 0 7mm;
+  }
+  .sheet-head img { width:18mm; height:18mm; object-fit:contain; }
+  .sheet-university { margin:0 0 1.5mm; color:#333; font-size:8.5pt; }
+  .sheet-head h1 { font:700 12pt Arial,Helvetica,sans-serif; margin:0; }
+  .sheet-head h2 { font:700 16pt Arial,Helvetica,sans-serif; margin:2mm 0 0; }
+  .field { display:flex; gap:7px; margin:3.2mm 0; font-weight:700; font-size:10.5pt; }
+  .field .line { flex:1; border-bottom:1px solid #333; font-weight:400; min-height:1.35em; padding-left:4px; }
+  .sheet-table { width:100%; border-collapse:collapse; table-layout:fixed; margin-top:6mm; }
+  .sheet-table th,.sheet-table td { border:1px solid #555; padding:2.2mm 2.5mm; font-size:10pt; }
+  .sheet-table th { background:#f0eee8 !important; text-align:left; font-size:10pt; font-weight:700; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .sheet-table th:nth-child(1) { width:23%; }
+  .sheet-table th:nth-child(2) { width:59%; }
+  .sheet-table th:nth-child(3) { width:18%; text-align:center; }
+  .sheet-table td { height:12mm; vertical-align:middle; overflow-wrap:anywhere; }
+  .sheet-table td.date { text-align:center; white-space:nowrap; }
+  .sheet-table td.ok { text-align:center; font-size:13pt; }
+  .sheet-table tr { break-inside:avoid; page-break-inside:avoid; }
+  .sheet-table thead { display:table-header-group; }
+  .sign { margin-top:10mm; break-inside:avoid; page-break-inside:avoid; }
+  .sign-block { display:flex; align-items:flex-end; gap:18mm; }
+  .sign-box { width:90mm; font-size:9.5pt; font-weight:700; }
+  .sign-box.small { width:42mm; }
+  .sign-line { border-bottom:1px solid #333; height:13mm; margin-bottom:2mm; }
+  .printed { margin-top:7mm; font-size:8pt; color:#444; text-align:right; }
+}

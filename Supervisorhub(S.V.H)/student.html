@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Supervision Meetings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/student.css">
+</head>
+<body>
+  <header class="nav no-print">
+    <div class="nav-in">
+      <a class="brand" href="index.html" aria-label="Supervision Register home">
+        <img src="img/crest.png" alt="">
+        <span class="brand-copy">
+          <span class="brand-org">Mulungushi University · School of Engineering and Technology (SET)</span>
+          <span class="brand-name">Supervision Register</span>
+        </span>
+      </a>
+      <button id="logoutBtn" class="btn-ghost btn-sm" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main class="wrap no-print">
+    <section class="hero">
+      <p class="eyebrow">Student dashboard</p>
+      <h1>Hi, <span id="pFirst">…</span></h1>
+      <p class="intro">Keep your supervision meetings and approvals together in one place.</p>
+      <div class="chips">
+        <span class="chip">Student ID <b id="pId"></b></span>
+        <span class="chip" id="pProgram"></span>
+        <span class="chip">Year <span id="pYear"></span></span>
+        <span class="chip">Supervisor: <b id="pSupervisor"></b></span>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat" style="--c:var(--green)"><div class="n" id="statApproved">0</div><div class="l">Verified</div></div>
+      <div class="stat" style="--c:var(--amber)"><div class="n" id="statPending">0</div><div class="l">Waiting</div></div>
+      <div class="stat" style="--c:var(--red)"><div class="n" id="statRejected">0</div><div class="l">Rejected</div></div>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Log a meeting</h2>
+        <p id="msg" class="msg" role="alert"></p>
+        <form id="requestForm">
+          <label>Meeting date <input type="date" id="meetingDate" required></label>
+          <label>Project title <input id="projectTitle" maxlength="150" required></label>
+          <button class="btn" type="submit" id="submitBtn">Submit for verification</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>My meetings</h2>
+          <button id="printBtn" class="btn-ghost btn-sm" type="button">Print my form</button>
+        </div>
+        <div id="list"></div>
+        <p id="empty" class="empty">No meetings logged yet.<br>Your first one will show up here.</p>
+      </section>
+    </div>
+  </main>
+
+  <!-- Printed form: only visible when printing -->
+  <section id="sheet" class="sheet">
+    <div class="sheet-head">
+      <img src="img/crest.png" alt="" onerror="this.remove()">
+      <div>
+        <p class="sheet-university">Mulungushi University · School of Engineering and Technology</p>
+        <h1>Department of Computer Science and Information Technology</h1>
+        <h2>Student Supervision Meetings Record</h2>
+      </div>
+    </div>
+    <div class="field"><span>Student No:</span><span class="line" id="sId"></span></div>
+    <div class="field"><span>Student Name:</span><span class="line" id="sName"></span></div>
+    <div class="field"><span>Research/Project Title:</span><span class="line" id="sTitle"></span></div>
+    <div class="field"><span>Supervisor Name:</span><span class="line" id="sSupervisor"></span></div>
+
+    <table class="sheet-table">
+      <thead>
+        <tr><th>Date of meeting</th><th>Supervisor comments</th><th>Verified</th></tr>
+      </thead>
+      <tbody id="sRows"></tbody>
+    </table>
+
+    <div class="sign">
+      <div class="sign-block">
+        <div class="sign-box"><div class="sign-line"></div>Supervisor signature</div>
+        <div class="sign-box small"><div class="sign-line"></div>Date</div>
+      </div>
+    </div>
+    <p class="printed">A tick indicates supervisor approval · Printed <span id="sPrinted"></span></p>
+  </section>
+
+  <script type="module" src="js/student.js"></script>
+</body>
+</html>

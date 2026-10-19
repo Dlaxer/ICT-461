@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Supervision Register</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="auth">
+    <aside class="auth-side">
+      <div>
+        <img src="img/crest.png" alt="Mulungushi University crest" onerror="this.remove()">
+        <div class="org">Mulungushi University · School of Engineering and Technology (SET)</div>
+        <h1>Every supervision meeting, on the record.</h1>
+      </div>
+      <ol class="steps">
+        <li><b>1</b><span>Log your meeting after it happens.</span></li>
+        <li><b>2</b><span>Your supervisor verifies it with one tap.</span></li>
+        <li><b>3</b><span>Print your meetings form, ready to sign.</span></li>
+      </ol>
+    </aside>
+
+    <main class="auth-main">
+      <div class="auth-card">
+        <h2>Welcome</h2>
+        <p id="authSub" class="sub">Log in or create your account.</p>
+
+        <div id="authTabs" class="tabs">
+          <button id="tabLogin" class="active" type="button">Log in</button>
+          <button id="tabRegister" type="button">Register</button>
+        </div>
+
+        <p id="msg" class="msg" role="alert"></p>
+        <section id="pendingPanel" hidden>
+          <p>Your supervisor application is awaiting administrator approval. You can sign out and return later.</p>
+          <button id="signOut" class="btn-ghost" type="button">Sign out</button>
+        </section>
+
+        <form id="loginForm">
+          <label>Email <input type="email" id="loginEmail" autocomplete="email" required></label>
+          <label>Password <input type="password" id="loginPassword" autocomplete="current-password" required></label>
+          <button class="btn" type="submit">Log in</button>
+        </form>
+
+        <form id="registerForm" hidden>
+          <label>Account type
+            <select id="accountRole" required>
+              <option value="student">Student</option>
+              <option value="supervisor">Supervisor</option>
+            </select>
+          </label>
+          <label>Full name <input id="fullName" autocomplete="name" required></label>
+          <div id="studentFields">
+            <div class="row2">
+              <label>Student ID <input id="studentId" required></label>
+              <label>Year
+                <select id="year" required>
+                  <option value="">–</option>
+                  <option>1</option><option>2</option><option>3</option>
+                  <option>4</option><option>5</option><option>6</option>
+                </select>
+              </label>
+            </div>
+            <label>Program <input id="program" placeholder="e.g. BSc Computer Science" required></label>
+            <label>Supervisor
+              <select id="supervisor" required>
+                <option value="">Loading supervisors...</option>
+              </select>
+            </label>
+          </div>
+          <label>Email <input type="email" id="regEmail" autocomplete="email" required></label>
+          <label>Password (min 6 characters)
+            <input type="password" id="regPassword" minlength="6" autocomplete="new-password" required>
+          </label>
+          <button class="btn" type="submit">Create account</button>
+        </form>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="js/auth.js"></script>
+</body>
+</html>
